@@ -4,6 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,15 +13,19 @@ import java.util.Map;
 @RequestMapping("/v1/members")
 public class MemberController {
     @PostMapping
-    public ResponseEntity postMember(@RequestParam("email") String email,
-                                     @RequestParam("name") String name,
-                                     @RequestParam("phone") String phone) {
-        Map<String, String> map = new HashMap<>();
-        map.put("email", email);
-        map.put("name", name);
-        map.put("phone", phone);
+    public ResponseEntity postMember(@Valid @RequestBody MemberPostDto memberPostDto) {
+        return new ResponseEntity<>(memberPostDto, HttpStatus.CREATED);
+    }
 
-        return new ResponseEntity<>(map, HttpStatus.CREATED);
+    @PatchMapping("/{member-id}")
+    public ResponseEntity patchMember(@PathVariable("member-id") @Min(1) long memberId,
+                                      @Valid @RequestBody MemberPatchDto memberPatchDto) {
+        memberPatchDto.setMemberId(memberId);
+        memberPatchDto.setName("홍길동");
+
+        // No need Business logic
+
+        return new ResponseEntity<>(memberPatchDto, HttpStatus.OK);
     }
 
     @GetMapping("/{member-id}")
@@ -36,5 +42,12 @@ public class MemberController {
 
         // not implementation
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{member-id}")
+    public ResponseEntity deleteMember(@PathVariable("member-id") long memberId) {
+        // No need business logic
+
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }

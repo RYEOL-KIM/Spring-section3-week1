@@ -12,16 +12,22 @@ import java.util.Map;
 @RequestMapping("/v1/coffees")
 public class CoffeeController {
     @PostMapping
-    public ResponseEntity postCoffee(@RequestParam("engName") long engName,
-                                     @RequestParam("korName") long korName) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("engName", engName);
-        map.put("korName", korName);
-
-        return new ResponseEntity<>(map, HttpStatus.CREATED);
+    public ResponseEntity postCoffee(@RequestBody CoffeePostDto coffeePostDto) {
+        return new ResponseEntity<>(coffeePostDto, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{coffee-Id}")
+    @PatchMapping("/{coffee-id}")
+    public ResponseEntity patchCoffee(@PathVariable("coffee-id") long coffeeId,
+                                      @RequestBody CoffeePatchDto coffeePatchDto) {
+        coffeePatchDto.setCoffeeId(coffeeId);
+        coffeePatchDto.setPrice(6000);
+
+        // No need business logic
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/{coffee-id}")
     public ResponseEntity getCoffee(@PathVariable("coffee-id") long coffeeId) {
         System.out.println("# coffeeId: " + coffeeId);
 
@@ -35,5 +41,12 @@ public class CoffeeController {
 
         // not implementation
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{coffee-id}")
+    public ResponseEntity deleteCoffee(@PathVariable("coffee-id") long coffeeId) {
+        // No need business logic
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
